@@ -1,16 +1,18 @@
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+$(document).ready(function(){
+  var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
+var number = 0;
 
 var phrases = [
-  'I love to sing because it\'s fun',
-  'where are you going',
-  'can I call you tomorrow',
-  'why did you talk while I was talking',
-  'she enjoys reading books and playing games',
-  'where are you going',
-  'have a great day',
-  'she sells seashells on the seashore'
+  'Marijn',
+  'Hoe laat gaat de boot',
+  'Branco moet naar de kapper',
+  'Waarom zijn bananen krom',
+  'Richard de machine',
+  'Wij zijn de practicals',
+  'goedemorgen',
+  'games zien er beter uit op de computer'
 ]
 
 var phrasePara = document.querySelector('.phrase');
@@ -19,18 +21,19 @@ var diagnosticPara = document.querySelector('.output');
 
 var testBtn = document.querySelector('button');
 
-function randomPhrase() {
-  var number = Math.floor(Math.random() * phrases.length);
-  return number;
+function video() {
+  return "video" +number+".mp4";
 }
 
 function testSpeech() {
   testBtn.disabled = true;
   testBtn.textContent = 'Test in progress';
 
-  var phrase = phrases[randomPhrase()];
+  var phrase = phrases[number];
+  var videos = document.getElementsByClassName("privacy-video");
+  videos.hassClass("video-"+number).addClass("show").removeClass("hidden");
   phrasePara.textContent = phrase;
-  resultPara.textContent = 'Right or wrong?';
+  resultPara.textContent = 'Goed of fout?';
   resultPara.style.background = 'rgba(0,0,0,0.2)';
   diagnosticPara.textContent = '...diagnostic messages';
 
@@ -39,7 +42,7 @@ function testSpeech() {
   var speechRecognitionList = new SpeechGrammarList();
   speechRecognitionList.addFromString(grammar, 1);
   recognition.grammars = speechRecognitionList;
-  recognition.lang = 'en-US';
+  recognition.lang = 'nl-NL';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
@@ -56,9 +59,10 @@ function testSpeech() {
     // We then return the transcript property of the SpeechRecognitionAlternative object 
     var speechResult = event.results[0][0].transcript;
     diagnosticPara.textContent = 'Speech received: ' + speechResult + '.';
-    if(speechResult === phrase) {
+    if(speechResult.includes(phrase)) {
       resultPara.textContent = 'I heard the correct phrase!';
       resultPara.style.background = 'lime';
+      number++;
     } else {
       resultPara.textContent = 'That didn\'t sound right.';
       resultPara.style.background = 'red';
@@ -69,6 +73,7 @@ function testSpeech() {
 
   recognition.onspeechend = function() {
     recognition.stop();
+    //testSpeech();
     testBtn.disabled = false;
     testBtn.textContent = 'Start new test';
   }
@@ -100,12 +105,12 @@ function testSpeech() {
   }
   
   recognition.onsoundstart = function(event) {
-      //Fired when any sound — recognisable speech or not — has been detected.
+      //Fired when any sound ï¿½ recognisable speech or not ï¿½ has been detected.
       console.log('SpeechRecognition.onsoundstart');
   }
   
   recognition.onsoundend = function(event) {
-      //Fired when any sound — recognisable speech or not — has stopped being detected.
+      //Fired when any sound ï¿½ recognisable speech or not ï¿½ has stopped being detected.
       console.log('SpeechRecognition.onsoundend');
   }
   
@@ -120,3 +125,4 @@ function testSpeech() {
 }
 
 testBtn.addEventListener('click', testSpeech);
+});
